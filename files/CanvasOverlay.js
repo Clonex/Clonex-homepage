@@ -109,24 +109,20 @@ export default class CanvasOverlay {
             {
                 var x = (i / 4) % this.target.canvas.width;
                 var y = ((i / 4) / this.target.canvas.width);
-                if(Math.abs(x - this.mousePos.x) <= 85 && Math.abs(y - this.mousePos.y) <= 85)
+                if((x - this.mousePos.x) <= 90 && (x - this.mousePos.x) >= -90 && (y - this.mousePos.y) <= 65 && (y - this.mousePos.y) >= -65)
                 {
-                        const check = Math.sqrt(Math.pow(x - this.mousePos.x, 2) + Math.pow(y - this.mousePos.y, 2)) < 85;
-                        if(check)
-                        {
-                            if(drawing.data[i] !== 0 || drawing.data[i + 1] !== 0 || drawing.data[i + 2] !== 0)
-                            {
-                            drawing.data[i] = vid[i];
-                            drawing.data[i + 1] = vid[i + 1];
-                            drawing.data[i + 2] = vid[i + 2];
-                            drawing.data[i + 3] = vid[i + 3];
-                        }else{
-                            drawing.data[i] = 255 - vid[i];
-                            drawing.data[i + 1] = 200 - vid[i + 1];
-                            drawing.data[i + 2] = 100 - vid[i + 2];
-                            drawing.data[i + 3] = vid[i + 3];
-                            
-                        }
+                    if(drawing.data[i] !== 0 || drawing.data[i + 1] !== 0 || drawing.data[i + 2] !== 0)
+                    {
+                        drawing.data[i] = vid[i];
+                        drawing.data[i + 1] = vid[i + 1];
+                        drawing.data[i + 2] = vid[i + 2];
+                        drawing.data[i + 3] = vid[i + 3];
+                    }else{
+                        drawing.data[i] = 255 - vid[i];
+                        drawing.data[i + 1] = 200 - vid[i + 1];
+                        drawing.data[i + 2] = 100 - vid[i + 2];
+                        drawing.data[i + 3] = vid[i + 3];
+                        
                     }
                 }
             }

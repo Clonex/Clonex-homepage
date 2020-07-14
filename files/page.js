@@ -8,5 +8,4 @@ import CanvasOverlay from "./CanvasOverlay.js";
                 document.querySelector("video"),
     );
     overlay.drawCenterText("MICHAEL SAABYE SALLING");
-
 })();

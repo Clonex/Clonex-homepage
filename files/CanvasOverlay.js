@@ -26,6 +26,7 @@ export default class CanvasOverlay {
         this.background = await createVideo(videoUrl);
         bgVideo.src = this.background.src;
         requestAnimationFrame(() => this.tick());
+        document.querySelector(".loading").classList.add("fade-out");
     }
 
     /*

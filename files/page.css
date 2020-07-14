@@ -1,5 +1,6 @@
 body {
     background-color: #000;
+    font-family: "Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans",sans-serif;
 }
 canvas, video {
     position: absolute;
@@ -12,4 +13,51 @@ canvas, video {
 
 video {
     opacity: 0.1;
+}
+
+.loading {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #873e00;
+    display: flex;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    align-items: center;
+    top: 0px;
+    left: 0px;
+    z-index: 999;
+    background-color: #000;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.fade-out {
+    animation-duration: 350ms;
+    animation-delay: 0ms;
+    animation-fill-mode: both;
+
+    -webkit-animation-name: fadeOut;
+    animation-name: fadeOut;
+}
+
+@-webkit-keyframes fadeOut {
+    0% {
+        opacity: 1
+    }
+
+    to {
+        opacity: 0
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1
+    }
+
+    to {
+        opacity: 0
+    }
 }

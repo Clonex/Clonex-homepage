@@ -7,7 +7,6 @@ export default class CanvasOverlay {
     constructor(target, videoUrl, bgVideo)
     {
         this.bg = createCanvas();
-        this.cursor = createCanvas();
         this.temp = createCanvas();
         this.target = {
             canvas: target,
@@ -94,17 +93,7 @@ export default class CanvasOverlay {
         this.bg.ctx.drawImage(this.background, 0, 0, this.target.canvas.width, this.target.canvas.height); // Draw video
         var vid = this.bg.ctx.getImageData(0, 0, this.target.canvas.width, this.target.canvas.height).data;
 
-        if(this.mousePos)
-        {
-            this.cursor.canvas.width = this.cursor.canvas.width;
-            this.cursor.ctx.beginPath();
-            this.cursor.ctx.arc(this.mousePos.x, this.mousePos.y, 85, 0, Math.PI * 2, true);
-            this.cursor.ctx.fillStyle = "red";
-            this.cursor.ctx.fill();
-        }
-
         var drawing = this.temp.ctx.getImageData(0, 0, this.target.canvas.width, this.target.canvas.height); // What to overlay the video to
-        var cursorData = this.cursor.ctx.getImageData(0, 0, this.target.canvas.width, this.target.canvas.height); // What to overlay the video to
         for(let i = 0; i < drawing.data.length; i += 4)
         {
             if(drawing.data[i] !== 0 || drawing.data[i + 1] !== 0 || drawing.data[i + 2] !== 0)
@@ -114,21 +103,30 @@ export default class CanvasOverlay {
                 drawing.data[i + 2] = 100 - vid[i + 2];
                 drawing.data[i + 3] = vid[i + 3];
             }
-
-            if(cursorData.data[i] !== 0 || cursorData.data[i + 1] !== 0 || cursorData.data[i + 2] !== 0)
+            
+            if(this.mousePos)
             {
-                if(drawing.data[i] !== 0 || drawing.data[i + 1] !== 0 || drawing.data[i + 2] !== 0)
+                var x = (i / 4) % this.target.canvas.width;
+                var y = ((i / 4) / this.target.canvas.width);
+                if(Math.abs(x - this.mousePos.x) <= 85 && Math.abs(y - this.mousePos.y) <= 85)
                 {
-                    drawing.data[i] = vid[i];
-                    drawing.data[i + 1] = vid[i + 1];
-                    drawing.data[i + 2] = vid[i + 2];
-                    drawing.data[i + 3] = vid[i + 3];
-                }else{
-                    drawing.data[i] = 255 - vid[i];
-                    drawing.data[i + 1] = 200 - vid[i + 1];
-                    drawing.data[i + 2] = 100 - vid[i + 2];
-                    drawing.data[i + 3] = vid[i + 3];
-                    
+                        const check = Math.sqrt(Math.pow(x - this.mousePos.x, 2) + Math.pow(y - this.mousePos.y, 2)) < 85;
+                        if(check)
+                        {
+                            if(drawing.data[i] !== 0 || drawing.data[i + 1] !== 0 || drawing.data[i + 2] !== 0)
+                            {
+                            drawing.data[i] = vid[i];
+                            drawing.data[i + 1] = vid[i + 1];
+                            drawing.data[i + 2] = vid[i + 2];
+                            drawing.data[i + 3] = vid[i + 3];
+                        }else{
+                            drawing.data[i] = 255 - vid[i];
+                            drawing.data[i + 1] = 200 - vid[i + 1];
+                            drawing.data[i + 2] = 100 - vid[i + 2];
+                            drawing.data[i + 3] = vid[i + 3];
+                            
+                        }
+                    }
                 }
             }
         }

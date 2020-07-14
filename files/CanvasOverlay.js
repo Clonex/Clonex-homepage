@@ -84,7 +84,6 @@ export default class CanvasOverlay {
             this.animateBoxes();
         }
         this.draw();
-        
         requestAnimationFrame(() => this.tick());
     }
 

@@ -16,6 +16,18 @@ export default class CanvasOverlay {
         target.height = window.innerHeight;
         this.setup(videoUrl, bgVideo);
         document.addEventListener("mousemove", (e) => this.mouseMoved(e));
+        document.addEventListener("resize", () => {
+            target.width = window.innerWidth;
+            target.height = window.innerHeight;
+
+            this.bg.canvas.width = window.innerWidth;
+            this.bg.canvas.height = window.innerHeight;
+
+            this.temp.canvas.width = window.innerWidth;
+            this.temp.canvas.height = window.innerHeight;
+
+            this.mousePos = null;
+        });
     }
 
     /*
@@ -40,12 +52,12 @@ export default class CanvasOverlay {
         };
     }
 
-
     /*
      * Draws @param text in the center of the canvas.
      */
     drawCenterText(text)
     {
+        this.temp.canvas.width = this.temp.canvas.width;
         this.temp.ctx.font = 'bold 54px "Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans",sans-serif';
         this.temp.ctx.fillStyle = "red";
         this.metrics = this.temp.ctx.measureText(text);
@@ -79,6 +91,8 @@ export default class CanvasOverlay {
      * Runs every iteration.
      */
     async tick(){
+        
+        this.drawCenterText("MICHAEL SAABYE SALLING");
         if(this.animating)
         {
             this.animateBoxes();

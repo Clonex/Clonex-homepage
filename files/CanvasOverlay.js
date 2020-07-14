@@ -16,7 +16,7 @@ export default class CanvasOverlay {
         target.height = window.innerHeight;
         this.setup(videoUrl, bgVideo);
         document.addEventListener("mousemove", (e) => this.mouseMoved(e));
-        document.addEventListener("resize", () => {
+        document.addEventListener("resize", () => { // TODO: fix me
             target.width = window.innerWidth;
             target.height = window.innerHeight;
 

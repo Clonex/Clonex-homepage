@@ -119,15 +119,16 @@ export default class CanvasOverlay {
             {
                 if(drawing.data[i] !== 0 || drawing.data[i + 1] !== 0 || drawing.data[i + 2] !== 0)
                 {
-                    drawing.data[i] = 100 - vid[i];
-                    drawing.data[i + 1] =  vid[i + 1];
-                    drawing.data[i + 2] =  vid[i + 2];
+                    drawing.data[i] = vid[i];
+                    drawing.data[i + 1] = vid[i + 1];
+                    drawing.data[i + 2] = vid[i + 2];
                     drawing.data[i + 3] = vid[i + 3];
                 }else{
                     drawing.data[i] = 255 - vid[i];
                     drawing.data[i + 1] = 200 - vid[i + 1];
                     drawing.data[i + 2] = 100 - vid[i + 2];
                     drawing.data[i + 3] = vid[i + 3];
+                    
                 }
             }
         }

@@ -46,7 +46,6 @@ export default class CanvasOverlay {
      */
     drawCenterText(text)
     {
-        this.temp.canvas.width = this.temp.canvas.width;
         this.temp.ctx.font = 'bold 54px "Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans",sans-serif';
         this.temp.ctx.fillStyle = "red";
         this.metrics = this.temp.ctx.measureText(text);
@@ -80,7 +79,6 @@ export default class CanvasOverlay {
      * Runs every iteration.
      */
     async tick(){
-        this.drawCenterText("MICHAEL SAABYE SALLING");
         if(this.animating)
         {
             this.animateBoxes();

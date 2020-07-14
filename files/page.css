@@ -1,0 +1,12 @@
+canvas, video {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    object-fit: cover;
+    height: 100vh;
+    width: 100vw;
+}
+
+video {
+    opacity: 0.1;
+}

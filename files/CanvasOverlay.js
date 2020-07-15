@@ -1,6 +1,7 @@
 import {createCanvas, getUrl, easeIn} from "./helpers.js?2";
 
 export default class CanvasOverlay {
+    
     constructor(target, videoUrl, bgVideo)
     {
         this.animating = true;
@@ -25,11 +26,17 @@ export default class CanvasOverlay {
      */
     async setup(videoUrl, bgVideo)
     {
+        this.worker = new Worker('files/worker.js');
+        this.worker.onmessage = (e) => {
+            this.target.ctx.putImageData(e.data.frame, 0, 0);
+        };
+
         document.addEventListener("mousemove", (e) => this.mouseMoved(e));
         document.addEventListener("mouseleave", (e) => {
             this.cursor.canvas.width = this.cursor.canvas.width;
             this.mousePos = null;
         });
+        
         document.addEventListener("resize", () => { // TODO: fix me
             target.width = window.innerWidth;
             target.height = window.innerHeight;
@@ -82,7 +89,7 @@ export default class CanvasOverlay {
      */
     animateBoxes()
     {
-        const firstLineI = this.animateI > this.metrics.width/25 ? this.metrics.width/25 : this.animateI;
+        const firstLineI = this.animateI > this.metrics.width / 45 ? this.metrics.width / 45 : this.animateI;
         this.temp.ctx.fillRect((this.temp.canvas.width / 2) - (this.metrics.width / 2), (this.temp.canvas.height / 2) - (this.metrics.actualBoundingBoxAscent / 2) + 12, 100 + easeIn(firstLineI), 5);//(firstLineI * 50), 5);
         if(this.animateI >= 10)
         {
@@ -120,32 +127,11 @@ export default class CanvasOverlay {
 
         var drawing = this.temp.ctx.getImageData(0, 0, this.target.canvas.width, this.target.canvas.height); // What to overlay the video to
         var cursor = this.cursor.ctx.getImageData(0, 0, this.target.canvas.width, this.target.canvas.height); 
-        for(let i = 0; i < drawing.data.length; i += 4)
-        {
-            if(drawing.data[i] !== 0 || drawing.data[i + 1] !== 0 || drawing.data[i + 2] !== 0)
-            {
-                drawing.data[i] = 255 - vid[i];
-                drawing.data[i + 1] = 200 - vid[i + 1];
-                drawing.data[i + 2] = 100 - vid[i + 2];
-                drawing.data[i + 3] = vid[i + 3];
-            }
-            if(cursor.data[i] !== 0 || cursor.data[i + 1] !== 0 || cursor.data[i + 2] !== 0)
-            {
-                if(drawing.data[i] !== 0 || drawing.data[i + 1] !== 0 || drawing.data[i + 2] !== 0)
-                {
-                    drawing.data[i] = vid[i];
-                    drawing.data[i + 1] = vid[i + 1];
-                    drawing.data[i + 2] = vid[i + 2];
-                    drawing.data[i + 3] = vid[i + 3];
-                }else{
-                    drawing.data[i] = 255 - vid[i];
-                    drawing.data[i + 1] = 200 - vid[i + 1];
-                    drawing.data[i + 2] = 100 - vid[i + 2];
-                    drawing.data[i + 3] = vid[i + 3];
-                    
-                }
-            }
-        }
-        this.target.ctx.putImageData(drawing, 0, 0);
+
+        this.worker.postMessage({
+            vid,
+            drawing, 
+            cursor,
+        });
     }
 }

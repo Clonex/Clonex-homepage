@@ -18,7 +18,7 @@ export const createVideo = async (url) => {
 /*
  * Easings.
  */
-export const easeIn = (x)  => x*x;
+export const easeIn = (x)  => (x * x * x) / (x / 2);
 
 /*
  * Gets the content of @param url, and returns a local blob URL.

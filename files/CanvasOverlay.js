@@ -1,11 +1,13 @@
-import {createCanvas, createVideo} from "./helpers.js";
+import {createCanvas, getUrl} from "./helpers.js?2";
 
 export default class CanvasOverlay {
-    animating = true;
-    metrics = null;
-    mousePos = null;
     constructor(target, videoUrl, bgVideo)
     {
+        this.animating = true;
+        this.metrics = null;
+        this.mousePos = null;
+        this.animateI = 0;
+
         this.bg = createCanvas();
         this.temp = createCanvas();
         this.cursor = createCanvas();
@@ -39,8 +41,8 @@ export default class CanvasOverlay {
             this.temp.canvas.height = window.innerHeight;
         });
 
-        this.background = await createVideo(videoUrl);
-        bgVideo.src = this.background.src;
+        this.background = bgVideo;//await createVideo(videoUrl);
+        this.background.src = await getUrl(videoUrl);//this.background.src;
         requestAnimationFrame(() => this.tick());
         document.querySelector(".loading").classList.add("fade-out");
     }
@@ -57,7 +59,7 @@ export default class CanvasOverlay {
 
         this.cursor.canvas.width = this.cursor.canvas.width;
         this.cursor.ctx.beginPath();
-        this.cursor.ctx.arc(this.mousePos.x, this.mousePos.y, 145, 0, Math.PI * 2, true);
+        this.cursor.ctx.arc(this.mousePos.x, this.mousePos.y, 125, 0, Math.PI * 2, true);
         this.cursor.ctx.fillStyle = "red";
         this.cursor.ctx.fill();
     }
@@ -74,7 +76,7 @@ export default class CanvasOverlay {
         this.temp.ctx.fillText(text, (this.temp.canvas.width / 2) - (this.metrics.width / 2), (this.temp.canvas.height / 2) - (this.metrics.actualBoundingBoxAscent / 2));
     }
 
-    animateI = 0;
+    
     /*
      * Animates the boxes.
      */

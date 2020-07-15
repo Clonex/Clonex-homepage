@@ -2,15 +2,23 @@
  * Returns a video element, with the source of @param url.
  */
 export const createVideo = async (url) => {
-    const data = await fetch(url).then(d => d.blob()); // TODO: catch error
-
+    const data = await getUrl(url);
+    
     const video = document.createElement("video");
+
     video.autoplay = true;
     video.loop = true;
     video.muted = true;
+    video.playsinline = true;
     video.src = window.URL.createObjectURL(data);
-    video.play();
+    video.play();//.catch(e => retryPlay(video));
     return video;
+};
+
+
+export const getUrl = async (url) => {
+    const data = await fetch(url).then(d => d.blob()); // TODO: catch error
+    return window.URL.createObjectURL(data);
 };
 
 /*

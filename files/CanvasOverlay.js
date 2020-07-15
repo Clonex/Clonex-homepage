@@ -1,4 +1,4 @@
-import {createCanvas, getUrl, easeInSine} from "./helpers.js?2";
+import {createCanvas, getUrl, easeIn} from "./helpers.js?2";
 
 export default class CanvasOverlay {
     constructor(target, videoUrl, bgVideo)
@@ -83,12 +83,12 @@ export default class CanvasOverlay {
     animateBoxes()
     {
         const firstLineI = this.animateI > this.metrics.width/25 ? this.metrics.width/25 : this.animateI;
-        this.temp.ctx.fillRect((this.temp.canvas.width / 2) - (this.metrics.width / 2), (this.temp.canvas.height / 2) - (this.metrics.actualBoundingBoxAscent / 2) + 12, 100 + easeInSine(firstLineI), 5);//(firstLineI * 50), 5);
+        this.temp.ctx.fillRect((this.temp.canvas.width / 2) - (this.metrics.width / 2), (this.temp.canvas.height / 2) - (this.metrics.actualBoundingBoxAscent / 2) + 12, 100 + easeIn(firstLineI), 5);//(firstLineI * 50), 5);
         if(this.animateI >= 10)
         {
             const tempI = this.animateI >= 60 ? 60 : this.animateI - 10;
-            this.temp.ctx.fillRect((this.temp.canvas.width / 2) - (this.metrics.width / 2), (this.temp.canvas.height / 2) - (this.metrics.actualBoundingBoxAscent / 2) + 17, 100 + easeInSine(tempI), 100);
-            this.temp.ctx.fillRect((this.temp.canvas.width / 2) - (this.metrics.width / 2), (this.temp.canvas.height / 2) - (this.metrics.actualBoundingBoxAscent) - 60, 100 + easeInSine(tempI), 20);
+            this.temp.ctx.fillRect((this.temp.canvas.width / 2) - (this.metrics.width / 2), (this.temp.canvas.height / 2) - (this.metrics.actualBoundingBoxAscent / 2) + 17, 100 + easeIn(tempI), 100);
+            this.temp.ctx.fillRect((this.temp.canvas.width / 2) - (this.metrics.width / 2), (this.temp.canvas.height / 2) - (this.metrics.actualBoundingBoxAscent) - 60, 100 + easeIn(tempI), 20);
             if(this.animateI > 60)
             {
                 this.animating = false;

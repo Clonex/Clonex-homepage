@@ -11,6 +11,11 @@ canvas, video {
     width: 100vw;
 }
 
+canvas{
+    font-smooth: never;
+    -webkit-font-smoothing : none;
+}
+
 video {
     opacity: 0.1;
 }

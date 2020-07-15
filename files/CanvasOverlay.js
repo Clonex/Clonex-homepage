@@ -36,7 +36,7 @@ export default class CanvasOverlay {
             this.cursor.canvas.width = this.cursor.canvas.width;
             this.mousePos = null;
         });
-        
+
         document.addEventListener("resize", () => { // TODO: fix me
             target.width = window.innerWidth;
             target.height = window.innerHeight;
@@ -123,10 +123,10 @@ export default class CanvasOverlay {
      */
     draw(){
         this.bg.ctx.drawImage(this.background, 0, 0, this.target.canvas.width, this.target.canvas.height); // Draw video
-        var vid = this.bg.ctx.getImageData(0, 0, this.target.canvas.width, this.target.canvas.height).data;
-
-        var drawing = this.temp.ctx.getImageData(0, 0, this.target.canvas.width, this.target.canvas.height); // What to overlay the video to
-        var cursor = this.cursor.ctx.getImageData(0, 0, this.target.canvas.width, this.target.canvas.height); 
+        
+        const vid = this.bg.ctx.getImageData(0, 0, this.target.canvas.width, this.target.canvas.height).data;
+        const drawing = this.temp.ctx.getImageData(0, 0, this.target.canvas.width, this.target.canvas.height); // What to overlay the video to
+        const cursor = this.cursor.ctx.getImageData(0, 0, this.target.canvas.width, this.target.canvas.height); 
 
         this.worker.postMessage({
             vid,

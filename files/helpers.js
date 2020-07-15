@@ -11,11 +11,13 @@ export const createVideo = async (url) => {
     video.muted = true;
     video.playsinline = true;
     video.src = window.URL.createObjectURL(data);
-    video.play();//.catch(e => retryPlay(video));
+    video.play();
     return video;
 };
 
-
+/*
+ * Gets the content of @param url, and returns a local blob URL.
+ */
 export const getUrl = async (url) => {
     const data = await fetch(url).then(d => d.blob()); // TODO: catch error
     return window.URL.createObjectURL(data);

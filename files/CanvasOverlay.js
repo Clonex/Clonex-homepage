@@ -41,8 +41,8 @@ export default class CanvasOverlay {
             this.temp.canvas.height = window.innerHeight;
         });
 
-        this.background = bgVideo;//await createVideo(videoUrl);
-        this.background.src = await getUrl(videoUrl);//this.background.src;
+        this.background = bgVideo;
+        this.background.src = await getUrl(videoUrl);
         requestAnimationFrame(() => this.tick());
         document.querySelector(".loading").classList.add("fade-out");
     }

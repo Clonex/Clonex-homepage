@@ -16,6 +16,11 @@ export const createVideo = async (url) => {
 };
 
 /*
+ * Easings.
+ */
+export const easeIn = (x)  => x*x;
+
+/*
  * Gets the content of @param url, and returns a local blob URL.
  */
 export const getUrl = async (url) => {

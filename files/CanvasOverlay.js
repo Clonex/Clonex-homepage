@@ -8,7 +8,8 @@ export default class CanvasOverlay {
         this.metrics = null;
         this.mousePos = null;
         this.animateI = 0;
-
+        this.boxesData = null;
+        
         this.bg = createCanvas();
         this.temp = createCanvas();
         this.cursor = createCanvas();
@@ -17,7 +18,6 @@ export default class CanvasOverlay {
             canvas: target,
             ctx: target.getContext("2d")
         };
-        this.boxesData = null;
         target.width = window.innerWidth;
         target.height = window.innerHeight;
         this.setup(videoUrl, bgVideo);
@@ -138,6 +138,7 @@ export default class CanvasOverlay {
                 drawing[i + 2] = 100 - vid[i + 2];
                 drawing[i + 3] = vid[i + 3];
             }
+
             if(this.cursorImageData && (this.cursorImageData[i] !== 0 || this.cursorImageData[i + 1] !== 0 || this.cursorImageData[i + 2] !== 0))
             {
                 if(drawing[i] !== 0 || drawing[i + 1] !== 0 || drawing[i + 2] !== 0)
@@ -151,7 +152,6 @@ export default class CanvasOverlay {
                     drawing[i + 1] = 200 - vid[i + 1];
                     drawing[i + 2] = 100 - vid[i + 2];
                     drawing[i + 3] = vid[i + 3];
-                    
                 }
             }
         }

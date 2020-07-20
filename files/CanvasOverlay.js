@@ -30,13 +30,12 @@ export default class CanvasOverlay {
     {
         document.addEventListener("mousemove", (e) => this.mouseMoved(e));
         document.addEventListener("mouseleave", (e) => {
-            this.cursor.canvas.width = this.cursor.canvas.width;
-            this.mousePos = null;
+            this.cursorImageData = null;
         });
 
         document.addEventListener("resize", () => { // TODO: fix me
-            target.width = window.innerWidth;
-            target.height = window.innerHeight;
+            this.target.width = window.innerWidth;
+            this.target.height = window.innerHeight;
 
             this.bg.canvas.width = window.innerWidth;
             this.bg.canvas.height = window.innerHeight;

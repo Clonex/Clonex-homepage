@@ -1,6 +1,7 @@
 body {
     background-color: #000;
     font-family: "Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans",sans-serif;
+    cursor: none;
 }
 canvas, video {
     position: absolute;

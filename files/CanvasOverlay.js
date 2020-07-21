@@ -1,7 +1,7 @@
 import {createCanvas, getUrl, easeIn} from "./helpers.js?2";
 
 export default class CanvasOverlay {
-    
+
     constructor(target, videoUrl, bgVideo)
     {
         this.animating = true;
@@ -80,7 +80,6 @@ export default class CanvasOverlay {
         this.temp.ctx.fillText(text, (this.temp.canvas.width / 2) - (this.metrics.width / 2), (this.temp.canvas.height / 2) - (this.metrics.actualBoundingBoxAscent / 2));
     }
 
-    
     /*
      * Animates the boxes.
      */
@@ -101,9 +100,8 @@ export default class CanvasOverlay {
         this.animateI++;
     }
     
-
     /*
-     * Runs every iteration.
+     * Redraws the canvases and updates the animations every frame.
      */
     async tick(){
         if(this.animating)
@@ -155,7 +153,7 @@ export default class CanvasOverlay {
             }
         }
 
-        var image = new ImageData(drawing, this.target.canvas.width, this.target.canvas.height);
-        this.target.ctx.putImageData(image, 0, 0);
+        const output = new ImageData(drawing, this.target.canvas.width, this.target.canvas.height);
+        this.target.ctx.putImageData(output, 0, 0);
     }
 }

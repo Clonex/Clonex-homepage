@@ -1,39 +1,46 @@
-import { createCanvas, getUrl, easeIn } from './helpers.js?2';
+import { createCanvas, getUrl, easeIn } from './utils';
 
-export default class CanvasOverlay {
-	constructor(target, videoUrl, bgVideo) {
-		this.animating = true;
-		this.metrics = null;
-		this.mousePos = null;
-		this.animateI = 0;
-		this.boxesData = null;
+export class CanvasOverlay {
+	animating = true;
+	metrics: TextMetrics | null = null;
+	animateIndex = 0;
+	boxesData: Uint8ClampedArray | null = null;
 
+	backgroundVideo: HTMLVideoElement;
+
+	bg: ReturnType<typeof createCanvas>;
+	temp: ReturnType<typeof createCanvas>;
+	target: ReturnType<typeof createCanvas>;
+
+	mousePos: { x: number; y: number } | null = null;
+	cursorImageData: Uint8ClampedArray | null = null;
+	cursor: ReturnType<typeof createCanvas>;
+
+	constructor(target: HTMLCanvasElement, videoUrl: string, bgVideo: HTMLVideoElement) {
 		this.bg = createCanvas();
 		this.temp = createCanvas();
 		this.cursor = createCanvas();
-		this.cursorImageData = null;
+
+		const ctx = target.getContext('2d');
+		if (!ctx) {
+			throw new Error('Couldnt find ctx for target');
+		}
+
 		this.target = {
 			canvas: target,
-			ctx: target.getContext('2d'),
+			ctx,
 		};
 		target.width = window.innerWidth;
 		target.height = window.innerHeight;
-		this.setup(videoUrl, bgVideo);
-	}
 
-	/*
-	 * Loads the given @param videoUrl and sets the video elements source.
-	 */
-	async setup(videoUrl, bgVideo) {
 		document.addEventListener('mousemove', e => this.mouseMoved(e));
 		document.addEventListener('mouseleave', e => {
 			this.cursorImageData = null;
 		});
 
 		document.addEventListener('resize', () => {
-			// TODO: fix me
-			this.target.width = window.innerWidth;
-			this.target.height = window.innerHeight;
+			this.target.canvas.width = window.innerWidth;
+			this.target.canvas.height = window.innerHeight;
 
 			this.bg.canvas.width = window.innerWidth;
 			this.bg.canvas.height = window.innerHeight;
@@ -42,22 +49,26 @@ export default class CanvasOverlay {
 			this.temp.canvas.height = window.innerHeight;
 		});
 
-		this.background = bgVideo;
-		this.background.src = await getUrl(videoUrl);
+		this.backgroundVideo = bgVideo;
+		getUrl(videoUrl).then(url => (this.backgroundVideo.src = url));
 		requestAnimationFrame(() => this.tick());
-		document.querySelector('.loading').classList.add('fade-out');
+		document.querySelector('.loading')?.classList.add('fade-out');
 	}
 
 	/*
 	 * Updates the mouse position.
 	 */
-	mouseMoved(e) {
+	mouseMoved(e: MouseEvent) {
 		this.mousePos = {
 			x: e.pageX,
 			y: e.pageY,
 		};
 
 		this.cursor.canvas.width = this.cursor.canvas.width;
+		if (!this.cursor) {
+			return;
+		}
+
 		this.cursor.ctx.beginPath();
 		this.cursor.ctx.arc(this.mousePos.x, this.mousePos.y, 125, 0, Math.PI * 2, true);
 		this.cursor.ctx.fillStyle = 'red';
@@ -68,7 +79,7 @@ export default class CanvasOverlay {
 	/*
 	 * Draws @param text in the center of the canvas.
 	 */
-	drawCenterText(text) {
+	drawCenterText(text: string) {
 		this.temp.ctx.font =
 			'bold 4vw "Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans",sans-serif';
 		this.temp.ctx.fillStyle = 'red';
@@ -85,15 +96,19 @@ export default class CanvasOverlay {
 	 * Animates the boxes.
 	 */
 	animateBoxes() {
-		const firstLineI = this.animateI > this.metrics.width / 45 ? this.metrics.width / 45 : this.animateI;
+		if (!this.metrics) {
+			throw new Error('No metrics found');
+		}
+
+		const firstLineI = this.animateIndex > this.metrics.width / 45 ? this.metrics.width / 45 : this.animateIndex;
 		this.temp.ctx.fillRect(
 			this.temp.canvas.width / 2 - this.metrics.width / 2,
 			this.temp.canvas.height / 2 - this.metrics.actualBoundingBoxAscent / 2 + 12,
 			100 + easeIn(firstLineI),
 			5
 		); //(firstLineI * 50), 5);
-		if (this.animateI >= 10) {
-			const tempI = this.animateI >= 60 ? 60 : this.animateI - 10;
+		if (this.animateIndex >= 10) {
+			const tempI = this.animateIndex >= 60 ? 60 : this.animateIndex - 10;
 			this.temp.ctx.fillRect(
 				this.temp.canvas.width / 2 - this.metrics.width / 2,
 				this.temp.canvas.height / 2 - this.metrics.actualBoundingBoxAscent / 2 + 17,
@@ -106,11 +121,11 @@ export default class CanvasOverlay {
 				100 + easeIn(tempI),
 				20
 			);
-			if (this.animateI > 60) {
+			if (this.animateIndex > 60) {
 				this.animating = false;
 			}
 		}
-		this.animateI++;
+		this.animateIndex++;
 	}
 
 	/*
@@ -129,35 +144,39 @@ export default class CanvasOverlay {
 	 * Draws the canvases, and converts the data to the target canvas.
 	 */
 	draw() {
-		this.bg.ctx.drawImage(this.background, 0, 0, this.target.canvas.width, this.target.canvas.height); // Draw video
-		let vid = this.bg.ctx.getImageData(0, 0, this.target.canvas.width, this.target.canvas.height).data;
+		this.bg.ctx.drawImage(this.backgroundVideo, 0, 0, this.target.canvas.width, this.target.canvas.height); // Draw video
+		const vid = this.bg.ctx.getImageData(0, 0, this.target.canvas.width, this.target.canvas.height).data;
 
 		if (this.animating) {
 			this.boxesData = this.temp.ctx.getImageData(0, 0, this.target.canvas.width, this.target.canvas.height).data; // What to overlay the video to
 		}
 
-		let drawing = new ImageData(
-			new Uint8ClampedArray(this.boxesData),
+		const outputData = new ImageData(
+			new Uint8ClampedArray(this.boxesData || []),
 			this.target.canvas.width,
 			this.target.canvas.height
 		);
-		for (let i = 0; i < drawing.data.byteLength; i += 4) {
-			if (drawing.data[i] !== 0 || drawing.data[i + 1] !== 0 || drawing.data[i + 2] !== 0) {
-				drawing.data.set([255 - vid[i], 200 - vid[i + 1], 100 - vid[i + 2], vid[i + 3]], i);
+		for (let i = 0; i < outputData.data.byteLength; i += 4) {
+			if (outputData.data[i] !== 0 || outputData.data[i + 1] !== 0 || outputData.data[i + 2] !== 0) {
+				outputData.data.set([255 - vid[i], 200 - vid[i + 1], 100 - vid[i + 2], vid[i + 3]], i);
 			}
 
 			if (
 				this.cursorImageData &&
 				(this.cursorImageData[i] !== 0 || this.cursorImageData[i + 1] !== 0 || this.cursorImageData[i + 2] !== 0)
 			) {
-				if (drawing.data[i] !== 0 || drawing.data[i + 1] !== 0 || drawing.data[i + 2] !== 0) {
-					drawing.data.set([vid[i], vid[i + 1], vid[i + 2], vid[i + 3]], i);
+				if (outputData.data[i] !== 0 || outputData.data[i + 1] !== 0 || outputData.data[i + 2] !== 0) {
+					outputData.data.set([vid[i], vid[i + 1], vid[i + 2], vid[i + 3]], i);
 				} else {
-					drawing.data.set([255 - vid[i], 200 - vid[i + 1], 100 - vid[i + 2], vid[i + 3]], i);
+					outputData.data.set([255 - vid[i], 200 - vid[i + 1], 100 - vid[i + 2], vid[i + 3]], i);
 				}
 			}
 		}
 
-		this.target.ctx.putImageData(drawing, 0, 0);
+		this.target.ctx.putImageData(outputData, 0, 0);
+	}
+
+	static initalize(target: HTMLCanvasElement, videoUrl: string, bgVideo: HTMLVideoElement) {
+		return new CanvasOverlay(target, videoUrl, bgVideo);
 	}
 }

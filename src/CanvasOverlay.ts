@@ -34,7 +34,7 @@ export class CanvasOverlay {
 		target.height = window.innerHeight;
 
 		document.addEventListener('mousemove', e => this.mouseMoved(e));
-		document.addEventListener('mouseleave', e => {
+		document.addEventListener('mouseleave', () => {
 			this.cursorImageData = null;
 		});
 

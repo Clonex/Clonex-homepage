@@ -15,7 +15,7 @@ datasource db {
 
 model Commit {
   id        Int      @id @default(autoincrement())
-  pushId    Int
+  pushId    BigInt
   ref       String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -23,6 +23,7 @@ model Commit {
 
   changes CommitChange[]
 
+  @@index([pushId])
   @@map("commits")
 }
 

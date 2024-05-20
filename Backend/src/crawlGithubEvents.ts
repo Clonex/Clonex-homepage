@@ -11,13 +11,13 @@ async function crawlGithubEvents() {
 			createdAt: 'desc',
 		},
 	});
-	const dates = new Date(lastCommit?.createdAt ?? '2023-09-19T10:28:34.000Z');
+	const dates = new Date(lastCommit?.createdAt ?? '2024-05-10T10:28:34.000Z');
 	const commits = await getCommits(dates);
 
 	for (const commit of commits) {
 		const check = await database.commit.findFirst({
 			where: {
-				id: commit.id,
+				pushId: commit.id,
 			},
 		});
 		if (!check) {

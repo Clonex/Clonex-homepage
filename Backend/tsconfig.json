@@ -14,8 +14,6 @@
 		"outDir": "dist",
 		"sourceMap": true,
 		"composite": true,
-		"declarationMap": true,
-
-		"lib": ["es2022"]
+		"declarationMap": true
 	}
 }

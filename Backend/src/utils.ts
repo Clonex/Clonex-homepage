@@ -1,4 +1,4 @@
-import { octokit } from './database';
+import { octokit } from './connections';
 
 interface Event {
 	type: 'PushEvent';

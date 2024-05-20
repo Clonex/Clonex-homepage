@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Commit {
+  id        Int      @id @default(autoincrement())
+  pushId    Int
+  ref       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sha       String   @unique
+
+  changes CommitChange[]
+
+  @@map("commits")
+}
+
+model CommitChange {
+  id        Int     @id @default(autoincrement())
+  commitId  Int
+  fileName  String
+  extension String?
+  additions Int
+  deletions Int
+  commit    Commit  @relation(fields: [commitId], references: [id])
+}

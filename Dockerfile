@@ -8,3 +8,6 @@ RUN pnpm install
 
 WORKDIR /project/Backend
 RUN pnpm prisma generate
+
+
+WORKDIR /project

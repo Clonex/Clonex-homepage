@@ -4,7 +4,7 @@ export class CanvasOverlay {
 	animating = true;
 	metrics: TextMetrics | null = null;
 	animateIndex = 0;
-	boxesData: Uint8ClampedArray | null = null;
+	boxesData: Uint8ClampedArray = new Uint8ClampedArray();
 
 	backgroundVideo: HTMLVideoElement;
 
@@ -152,7 +152,7 @@ export class CanvasOverlay {
 		}
 
 		const outputData = new ImageData(
-			new Uint8ClampedArray(this.boxesData || []),
+			new Uint8ClampedArray(this.boxesData),
 			this.target.canvas.width,
 			this.target.canvas.height
 		);

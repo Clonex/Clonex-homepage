@@ -8,8 +8,10 @@ datasource db {
 }
 
 model Repository {
-  id   BigInt @id
-  name String
+  id        BigInt   @id
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   commits Commit[]
 }
@@ -19,7 +21,7 @@ model Commit {
   pushId       BigInt
   ref          String
   createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  updatedAt    DateTime   @default(now()) @updatedAt
   sha          String     @unique
   repository   Repository @relation(fields: [repositoryId], references: [id])
   repositoryId BigInt
@@ -31,11 +33,14 @@ model Commit {
 }
 
 model CommitChange {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   commitId  Int
   fileName  String
   extension String?
   additions Int
   deletions Int
-  commit    Commit  @relation(fields: [commitId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  commit Commit @relation(fields: [commitId], references: [id])
 }

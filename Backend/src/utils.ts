@@ -93,8 +93,6 @@ export async function getCommits(lastUpdate: Date) {
 		}
 
 		ret.push(...events.filter(event => event.changes.length > 0));
-
-		// console.log("Page", events.map(event => event?.time))
 	}
 
 	return ret.sort((a, b) => b.time.getTime() - a.time.getTime());

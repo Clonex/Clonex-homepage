@@ -29,6 +29,17 @@ async function crawlGithubEvents() {
 					changes: {
 						create: commit.changes,
 					},
+					repository: {
+						connectOrCreate: {
+							create: {
+								id: commit.repo.id,
+								name: commit.repo.name,
+							},
+							where: {
+								id: commit.repo.id,
+							},
+						},
+					},
 				},
 			});
 		}

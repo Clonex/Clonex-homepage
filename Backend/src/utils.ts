@@ -1,3 +1,4 @@
+import { parse } from 'path';
 import { octokit } from './connections';
 
 interface Event {
@@ -79,10 +80,12 @@ export async function getCommits(lastUpdate: Date) {
 					ref: event.ref,
 				});
 				for (const file of commit.data.files ?? []) {
+					const { ext } = parse(file.filename);
+
 					event.changes.push({
 						additions: file.additions,
 						deletions: file.deletions,
-						extension: file.filename.split('.').at(-1),
+						extension: ext,
 						fileName: file.filename,
 					});
 				}

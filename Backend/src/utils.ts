@@ -1,14 +1,15 @@
 import { octokit } from './connections';
 
-interface Event {
-	type: 'PushEvent';
-	repo: {
-		name: string;
-		id: number;
-	};
+type PullRequestPayload = {
+	type: 'PullRequestEvent';
 	payload: {
-		push_id: number;
-		ref: string;
+		action: 'open' | 'closed';
+	};
+};
+
+type CommmitEvent = {
+	type: 'PushEvent';
+	payload: {
 		commits: {
 			sha: string;
 			author: {
@@ -16,8 +17,19 @@ interface Event {
 			};
 		}[];
 	};
+};
+
+type Event = {
+	repo: {
+		name: string;
+		id: number;
+	};
+	payload: {
+		push_id: number;
+		ref: string;
+	};
 	created_at: string;
-}
+} & (CommmitEvent | PullRequestPayload);
 
 interface MappedEvent {
 	sha: string;
@@ -59,6 +71,7 @@ function mapEvent(event: Event) {
 
 export async function getCommits(lastUpdate: Date) {
 	const ret: MappedEvent[] = [];
+
 	for await (const response of octokit.paginate.iterator('GET /users/{USER}/events', {
 		USER,
 	})) {

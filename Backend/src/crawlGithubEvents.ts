@@ -1,5 +1,5 @@
 import { database } from './connections';
-import { MappedEvent, getActivity } from './utils';
+import { MappedEvent, getActivity, getStartingPoint } from './utils';
 
 async function updateCommit(event: Extract<MappedEvent, { type: 'commit' }>) {
 	const check = await database.commit.findFirst({
@@ -78,16 +78,8 @@ async function updateReviewComment(event: Extract<MappedEvent, { type: 'reviewCo
 }
 
 async function crawlGithubEvents() {
-	const lastCommit = await database.commit.findFirst({
-		select: {
-			createdAt: true,
-		},
-		orderBy: {
-			createdAt: 'desc',
-		},
-	});
-	const dates = new Date(lastCommit?.createdAt ?? '2024-05-10T10:28:34.000Z');
-	const activities = await getActivity(dates);
+	const lastDate = await getStartingPoint();
+	const activities = await getActivity(lastDate);
 
 	for (const activity of activities) {
 		if (activity.type === 'reviewComment') {

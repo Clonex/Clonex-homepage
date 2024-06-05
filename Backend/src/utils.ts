@@ -1,4 +1,4 @@
-import { octokit } from './connections';
+import { database, octokit } from './connections';
 
 type PullRequestCommentPayload = {
 	type: 'PullRequestReviewCommentEvent';
@@ -157,4 +157,30 @@ export async function getActivity(lastUpdate: Date) {
 	}
 
 	return ret.sort((a, b) => b.time.getTime() - a.time.getTime());
+}
+
+export async function getStartingPoint() {
+	const [lastCommit, lastReviewComment] = await Promise.all([
+		database.commit.findFirst({
+			select: {
+				createdAt: true,
+			},
+			orderBy: {
+				createdAt: 'desc',
+			},
+		}),
+		database.reviewComment.findFirst({
+			select: {
+				createdAt: true,
+			},
+			orderBy: {
+				createdAt: 'desc',
+			},
+		}),
+	]);
+
+	const lastCommitDate = new Date(lastCommit?.createdAt ?? '2024-05-10T10:28:34.000Z');
+	const lastReviewCommentDate = new Date(lastReviewComment?.createdAt ?? '2024-05-10T10:28:34.000Z');
+
+	return lastCommitDate > lastReviewCommentDate ? lastReviewCommentDate : lastCommitDate;
 }

@@ -88,7 +88,7 @@ async function crawlGithubEvents() {
 			await updateCommit(activity);
 		}
 	}
-	console.log('Activities', activities.length);
+	console.log('Activities', { amount: activities.length, lastDate });
 }
 
 crawlGithubEvents();

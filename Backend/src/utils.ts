@@ -1,9 +1,22 @@
 import { octokit } from './connections';
 
-type PullRequestPayload = {
-	type: 'PullRequestEvent';
+type PullRequestCommentPayload = {
+	type: 'PullRequestReviewCommentEvent';
 	payload: {
-		action: 'open' | 'closed';
+		pull_request: {
+			id: number;
+			title: string;
+			head: {
+				ref: string;
+			};
+		};
+		comment: {
+			id: number;
+			path: string;
+			commit_id: string;
+			pull_request_review_id: number;
+			body: string;
+		};
 	};
 };
 
@@ -29,9 +42,9 @@ type Event = {
 		ref: string;
 	};
 	created_at: string;
-} & (CommmitEvent | PullRequestPayload);
+} & (CommmitEvent | PullRequestCommentPayload);
 
-interface MappedEvent {
+interface MappedPushEvent {
 	sha: string;
 	repo: {
 		id: number;
@@ -41,8 +54,11 @@ interface MappedEvent {
 	ref: string;
 	owner: string;
 	time: Date;
+	type: 'commit';
 	changes: { additions: number; deletions: number; fileName: string; extension?: string }[];
 }
+
+export type MappedEvent = NonNullable<ReturnType<typeof mapEvent>>;
 
 const USER = 'Clonex';
 const EMAIL = 'clonex_kontakt@hotmail.com';
@@ -56,20 +72,46 @@ function mapEvent(event: Event) {
 					sha: commit.sha,
 					repo: {
 						id: event.repo.id,
-						name: repo,
+						name: repo || 'unknown',
 					},
 					id: event.payload.push_id,
 					ref: event.payload.ref,
-					owner,
+					owner: owner || 'unknown',
+					type: 'commit',
 					time: new Date(event.created_at),
 					changes: [],
-				};
+				} as MappedPushEvent;
 			}
 		}
+	} else if (event.type === 'PullRequestReviewCommentEvent') {
+		const reviewComment = event.payload.comment;
+		const pullRequest = event.payload.pull_request;
+		const [owner, repo] = event.repo.name.split('/');
+
+		return {
+			repo: {
+				id: event.repo.id,
+				name: repo || 'unknown',
+			},
+			review: {
+				id: reviewComment.pull_request_review_id,
+				ref: pullRequest.head.ref,
+				title: pullRequest.title,
+			},
+			comment: reviewComment.body,
+			id: reviewComment.id,
+			owner: owner || 'unknown',
+			type: 'reviewComment',
+			time: new Date(event.created_at),
+			file: {
+				extension: reviewComment.path.split('.').at(-1)?.split('/').at(-1)?.toLowerCase(),
+				fileName: reviewComment.path,
+			},
+		} as const;
 	}
 }
 
-export async function getCommits(lastUpdate: Date) {
+export async function getActivity(lastUpdate: Date) {
 	const ret: MappedEvent[] = [];
 
 	for await (const response of octokit.paginate.iterator('GET /users/{USER}/events', {
@@ -77,35 +119,41 @@ export async function getCommits(lastUpdate: Date) {
 	})) {
 		const events = (response.data as Event[])
 			.map(mapEvent)
-			.filter(event => event !== undefined)
-			.filter(event => event?.time && event.time > lastUpdate) as MappedEvent[];
+			.filter((event): event is MappedEvent => event !== undefined)
+			.filter(event => event?.time && event.time > lastUpdate);
 
 		if (events.length === 0) {
 			break;
 		}
 
 		for (const event of events) {
-			try {
-				const commit = await octokit.rest.repos.getCommit({
-					owner: event.owner,
-					repo: event.repo.name,
-					ref: event.ref,
-				});
-				for (const file of commit.data.files ?? []) {
-					event.changes.push({
-						additions: file.additions,
-						deletions: file.deletions,
-						extension: file.filename.split('.').at(-1)?.split('/').at(-1)?.toLowerCase(),
-						fileName: file.filename,
+			if (event.type === 'commit') {
+				try {
+					const commit = await octokit.rest.repos.getCommit({
+						owner: event.owner,
+						repo: event.repo.name,
+						ref: event.ref,
 					});
+					for (const file of commit.data.files ?? []) {
+						event.changes.push({
+							additions: file.additions,
+							deletions: file.deletions,
+							extension: file.filename.split('.').at(-1)?.split('/').at(-1)?.toLowerCase(),
+							fileName: file.filename,
+						});
+					}
+				} catch (error) {
+					// Could try to look in master instead?
+					console.log('Err', error);
 				}
-			} catch (error) {
-				// Could try to look in master instead?
-				console.log('Err', error);
-			}
-		}
 
-		ret.push(...events.filter(event => event.changes.length > 0));
+				if (event.changes.length === 0) {
+					continue;
+				}
+			}
+
+			ret.push(event);
+		}
 	}
 
 	return ret.sort((a, b) => b.time.getTime() - a.time.getTime());

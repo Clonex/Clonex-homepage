@@ -13,7 +13,32 @@ model Repository {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  commits Commit[]
+  commits        Commit[]
+  reviewComments ReviewComment[]
+}
+
+model Review {
+  id        BigInt   @id @default(autoincrement())
+  ref       String
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  reviewComments ReviewComment[]
+}
+
+model ReviewComment {
+  id           Int        @id @default(autoincrement())
+  commentId    BigInt     @unique
+  comment      String
+  fileName     String
+  extension    String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now()) @updatedAt
+  reviewId     BigInt
+  review       Review     @relation(fields: [reviewId], references: [id])
+  repository   Repository @relation(fields: [repositoryId], references: [id])
+  repositoryId BigInt
 }
 
 model Commit {

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node ./src/crawlGithubEvents.ts"
+    "start": "ts-node ./src/crawlGithubEvents.ts",
+    "start:url": "ts-node ./src/crawlURL.ts"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",

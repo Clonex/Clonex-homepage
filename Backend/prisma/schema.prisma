@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model CrawlLog {
+  id        Int      @id @default(autoincrement())
+  type      String
+  value     String
+  createdAt DateTime @default(now())
+}
+
 model Repository {
   id        BigInt   @id
   name      String

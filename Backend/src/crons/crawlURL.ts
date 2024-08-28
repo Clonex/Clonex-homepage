@@ -1,4 +1,4 @@
-import { database } from "./connections";
+import { database } from "../connections";
 
 const URL = process.env.CRAWL_URL;
 const htmlKey = atob(process.env.HTML_KEY || "");
@@ -19,7 +19,7 @@ async function getValue() {
   return value;
 }
 
-async function crawl() {
+export async function crawlURLCron() {
   if (!URL) {
     throw new Error("Missing CRAWL_URL");
   }
@@ -39,5 +39,3 @@ async function crawl() {
 
   console.log("Crawled value", value);
 }
-
-crawl();

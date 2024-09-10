@@ -33,7 +33,7 @@ export const getUrl = async (url: string) => {
  */
 export const createCanvas = () => {
 	const canvas = document.createElement('canvas');
-	const ctx = canvas.getContext('2d');
+	const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
 	if (!ctx) {
 		throw new Error('Couldnt find ctx for created canvas');

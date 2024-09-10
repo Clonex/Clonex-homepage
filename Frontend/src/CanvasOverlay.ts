@@ -21,7 +21,9 @@ export class CanvasOverlay {
 		this.temp = createCanvas();
 		this.cursor = createCanvas();
 
-		const ctx = target.getContext('2d');
+		const ctx = target.getContext('2d', {
+			willReadFrequently: true,
+		});
 		if (!ctx) {
 			throw new Error('Couldnt find ctx for target');
 		}

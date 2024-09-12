@@ -50,9 +50,11 @@ export class CanvasOverlay {
 		});
 
 		this.backgroundVideo = bgVideo;
-		getUrl(videoUrl).then(url => (this.backgroundVideo.src = url));
+		getUrl(videoUrl).then(url => {
+			this.backgroundVideo.src = url;
+			document.querySelector('.loading')?.classList.add('fade-out');
+		});
 		requestAnimationFrame(() => this.tick());
-		document.querySelector('.loading')?.classList.add('fade-out');
 	}
 
 	/*

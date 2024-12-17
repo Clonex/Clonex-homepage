@@ -1,6 +1,7 @@
 import cron from "node-cron";
-import { crawlGithubEvents, crawlURLCron } from "./crons";
+import { crawlGithubEvents, crawlGomoreSellers, crawlURLCron } from "./crons";
 
+cron.schedule("0 */2 * * *", () => crawlGomoreSellers());
 cron.schedule("*/2 * * * *", () => crawlGithubEvents());
 cron.schedule("* * * * *", () => {
   if (process.env.CRAWL_URL) {

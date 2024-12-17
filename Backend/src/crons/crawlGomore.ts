@@ -35,6 +35,8 @@ export async function crawlGomoreSellers() {
       value: rental.amount.toString(),
     })),
   });
+
+  console.log("Crawled rentals", sellerRentals);
 }
 
 interface GomoreSection {

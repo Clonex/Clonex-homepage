@@ -3,11 +3,11 @@ FROM node:slim
 WORKDIR /project
 
 COPY . .
+COPY . .
 RUN corepack enable
 RUN pnpm install
 
 WORKDIR /project/Backend
 RUN pnpm prisma generate
 
-
-WORKDIR /project
+CMD ["pnpm","run","start"]

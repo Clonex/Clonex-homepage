@@ -1,8 +1,6 @@
 FROM node:slim
 
 WORKDIR /project
-
-COPY . .
 COPY . .
 RUN corepack enable
 RUN pnpm install

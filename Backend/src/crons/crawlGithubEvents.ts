@@ -7,7 +7,7 @@ async function updateCommit(event: Extract<MappedEvent, { type: "commit" }>) {
       id: true,
     },
     where: {
-      pushId: event.id,
+      OR: [{ pushId: event.id }, { sha: event.sha }],
     },
   });
   if (!check) {

@@ -80,8 +80,10 @@ async function updateReviewComment(
 }
 
 export async function crawlGithubEvents() {
+  console.log("crawlGithubEvents triggered");
   const lastDate = await getStartingPoint();
   const activities = await getActivity(lastDate);
+  console.log("Got data", { amount: activities.length, lastDate });
 
   for (const activity of activities) {
     if (activity.type === "reviewComment") {
